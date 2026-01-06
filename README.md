@@ -7,11 +7,11 @@ This project is based on [rainmeter-todo](https://github.com/alperenozlu/rainmet
 
 Here are some preview photos you can check out.
 
-![Screenshot of Rainmeter Trading-Tracker](photo-example-1.png)
-![Screenshot of Rainmeter Trading-Tracker](photo-example-3.png)
-![Screenshot of Rainmeter Trading-Tracker](photo-example-4.png)
-![Screenshot of Rainmeter Trading-Tracker](photo-example-5.png)
-![Screenshot of Rainmeter Trading-Tracker](photo-example-2.png)
+![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-1.png)
+![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-3.png)
+![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-4.png)
+![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-5.png)
+![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-2.png)
 
 
 ## 📝 Features
