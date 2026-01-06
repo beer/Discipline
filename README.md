@@ -23,6 +23,7 @@ Here are some preview photos you can check out.
 - Minimize the widget to show only the title
 - Show Date and Time on the widget
 - Can choice the widget size by menu
+- Can be in Chinese, but needs to be copy-pasteable.
 - Highly customizable
 
 
