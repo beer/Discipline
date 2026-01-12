@@ -1,12 +1,13 @@
 # ✔️ Rainmeter Trading Tracker
 
 A small Rainmeter widget to help track trading setups and monitor daily trading rules. Designed for traders who want a quick reference while taking screenshots for their trading journey.
-This project is based on [rainmeter-todo](https://github.com/alperenozlu/rainmeter-todo), with additional features tailored for trading, including setup tracking, rule checks, progress bars, and percentages.
+This project is based on [rainmeter-todo](https://github.com/alperenozlu/rainmeter-todo), with additional features tailored for trading, including setup tracking, rule checks, and multi-layered progress tracking.
 
 ## 🎞️ Preview
 
 Here are some preview photos you can check out.
 
+![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-6.png)
 ![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-1.png)
 ![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-3.png)
 ![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-4.png)
@@ -16,16 +17,12 @@ Here are some preview photos you can check out.
 
 ## 📝 Features
 
-- Add, Delete and Reorder criteria for your trading setups
-- Mark the criteria/rule as major
-- Recover deleted criteria/rules from the trash bin
-- Hide edit options for a cleaner widget
-- Minimize the widget to show only the title
-- Show Date and Time on the widget
-- Can choice the widget size by menu
-- Can be in Chinese, but needs to be copy-pasteable.
-- Highly customizable
-
+- **Task Management**: Add, Delete, and Reorder criteria with ease. Supports "Remind" and "Important" flagging.
+- **Trash Bin System**: Recover accidentally deleted rules or setups.
+- **Screenshot Mode**: Hide edit options for a cleaner widget.
+- **Minimize Mode**: Toggle between a full list and a clean title-only view.
+- **Multi-Layer Progress Bar**: Visualizes Major Tasks (Important) and Minor Tasks separately within a single unified bar.
+- **Chinese Support**: an be in Chinese, but needs to be copy-pasteable.
 
 ## Install
 
@@ -52,30 +49,60 @@ Here are some preview photos you can check out.
   - Navigate to `Rainmeter > Skins > rainmeter-trading-tracker > Setups/Rules > Large/Medium/Small.ini`
     - If you do not see `rainmeter-trading-tracker` in the skin selection, try navigating to `Rainmeter > Refresh all`
 
-## 🖋️ Customize
+# 🖋️ Customize & Trading Tracker Variables Guide (User Settings)
 
-1. Go to `Rainmeter > Skins > rainmeter-trading-tracker > Setups/Rules > Large/Medium/Small.ini` and click `Edit` button.
-2. Edit the values you want to change. You can find information about which fields you can change in the table below.
-3. After saving the file, you can see the changes by clicking the refresh button twice.
-4. To create a new setup or rule, simply duplicate the folder and rename it to whatever you want.
+You can fully customize your Trading Tracker by editing the `[Variables]` section within the `.ini` file. Below is a detailed breakdown of each setting:
 
-| Name                	| Description                                      	| Possible Values   	| Default Value   	|
-|---------------------	|--------------------------------------------------	|-------------------	|-----------------	|
-| SolidColor          	| Background color of the skin                     	| Color Code        	| 0,0,0,150       	|
-| SkinWidth           	| Width of the skin                                	| Number            	| 600             	|
-| SHOW_RECURRING      	| Show/Hide Recurring column                       	| 0: False, 1: True 	| 1               	|
-| SHOW_IMPORTANT      	| Show/Hide Important column                       	| 0: False, 1: True 	| 1               	|
-| SHOW_DATE             | Show/Hide Date                                    | 0: False, 1: True   | 0                 |
-| SHOW_TIME             | Show/Hide Time                                    | 0: False, 1: True   | 0                 |
-| ACTIVE_TASK_COLOR   	| Color of the active task                         	| Color Code        	| FFFFFF          	|
-| COMLETED_TASK_COLOR 	| Color of the completed task                      	| Color Code        	| 255,255,255,170 	|
-| TRASH_LIMIT         	| Maximum number of deleted tasks to keep in trash 	| Number            	| 10              	|
-| BUTTON_SIZE         	| Font size of icon buttons                        	| Number (px)       	| 18              	|
-| BUTTON_COLOR        	| Font color of icon buttons                       	| Color Code        	| FEFEFE          	|
-| FONT_FACE           	| Font type to be used                             	| Inter or Roboto   	| Inter           	|
-| FONT_SIZE           	| Font size of texts                               	| Number (px)       	| 15              	|
-| TITLE                 | Write what you want to show on title              | String              | ICT Setup         |
+## 1. General Appearance & Features
+Controls the basic layout and visibility of UI elements.
 
+| Variable | Description | Recommended / Example |
+| :--- | :--- | :--- |
+| `TITLE` | The title displayed at the top of the widget. | `TITLE=Daily Trading Rules` |
+| `SolidColor` | Background color and transparency (R,G,B,Alpha). | `0,0,0,150` (Dark Semi-transparent) |
+| `SkinWidth` | The overall width of the widget. | `350` (Recommended minimum) |
+| `SHOW_REMIND` | Toggle "Reminder" icons (Does not affect progress). | `0` (Off), `1` (On) |
+| `SHOW_IMPORTANT`| Toggle "Major" icons (Affects 80% of progress). | `0` (Off), `1` (On) |
+| `SHOW_DATE` | Show/Hide the date at the bottom. | `0` (Off), `1` (On) |
+| `SHOW_TIME` | Show/Hide the time (Static, updates on refresh). | `0` (Off), `1` (On) |
+
+## 2. Typography & Dynamic Scaling
+This widget uses **Dynamic Proportional Scaling**. You only need to adjust `FONT_SIZE`, and other dimensions will scale automatically to maintain alignment.
+
+| Variable | Description | Default Formula / Ref |
+| :--- | :--- | :--- |
+| `FONT_FACE` | The name of the font to be used. | `Inter`, `Arial`, `Roboto` |
+| `FONT_SIZE` | Base font size for all text. | `12` (Default), `15` (Large) |
+| `LINE_HEIGHT` | Vertical spacing between task lines. | `(#FONT_SIZE# * 2.1)` |
+| `BUTTON_SIZE` | Size of all action icons (Add, Refresh, etc.). | `(#FONT_SIZE# + 2)` |
+| `BAR_HEIGHT` | Thickness of the progress bar at the bottom. | `(#FONT_SIZE# * 2)` |
+
+## 3. Color Configuration
+Colors use the format `Red, Green, Blue, Alpha` (Range: 0-255).
+
+### 🔹 Task Text Colors
+| Task Type | Active (Pending) Color | Ticked (Completed) Color |
+| :--- | :--- | :--- |
+| **Normal Rules** | `ACTIVE_TASK_COLOR` | `DONE_TASK_COLOR` |
+| **Major Rules** | `IMPORTANT_TASK_COLOR` | `DONE_IMPORTANT_TASK_COLOR` |
+
+### 🔹 Progress Bar Colors
+* **ColorTodo**: Background color of the bar (Incomplete portion).
+* **ColorDone**: Fill color for completed normal rules.
+* **ColorMajorDone**: Fill color for completed major rules (Usually a high-contrast color).
+
+## 4. Advanced Logic
+| Variable | Description | Default Value |
+| :--- | :--- | :--- |
+| `MAX_MAJOR_DONE_RATE` | Max percentage weight for rules marked as "Major". | `80` (Major rules take 80%) |
+| `TRASH_LIMIT` | Maximum number of deleted items kept in the trash. | `10` |
+
+---
+
+## 💡 Quick Tips for Customization
+1. **Visual Balance**: For a modern look, try using a vibrant Cyan or Orange for `ColorMajorDone`.
+2. **Transparency**: The 4th value (Alpha) in colors controls opacity. `0` is invisible, `255` is fully solid.
+3. **Applying Changes**: After saving your `.ini` file, **Right-click the widget > Refresh skin** to see the updates immediately.
 
 
 ## 🤖 Technical Details & Notes
@@ -84,15 +111,13 @@ Here are some preview photos you can check out.
 
 In an emergency, you may want to edit the task file manually. For this, you must first know the structure of the task file.
 
-- In the first line of the `tasks.txt` file, there is `task|x|x` information. This line should never be deleted. The program accepts this line as the title.
-
-- Each line in the file is a task.
-
-- Task's information is separated by  `|` character. The attribute belonging to a column is shown in the table below.  
+- **First Line**: `task|x|x` (Header info, do not delete).
+- **Remind Tasks**: Excluded from the progress bar to focus on core execution.
+- **Important Tasks**: Counted as "Major Progress" and highlighted on the bar.
 
 | 1         | 2            | 3            | 4            |
 | --------- | ------------ | ------------ | ------------ |
-| Task Text | Is Completed | Is Recurring | Is Important |
+| Task Text | Is Completed | Is Remind | Is Important |
 
 For example, a completed and important task would look like this `task title|x||x` 
     
@@ -108,6 +133,6 @@ Added and deleted tasks are stored on a file basis. Since there is no database c
 ### 😔 Known Bugs and Issues
 - If Windows commands are entered as a task, the relevant command is triggered.
 - If the task contains the `'` character, it's not saved.
-- The title is overlapping the input column.
 
-PS: This widget is mainly for my personal use, so I’ll fix the issues above whenever I have free time.
+---
+*This widget is tailored for professional trading documentation. Contributions and feedback are welcome!*
