@@ -13,11 +13,11 @@ A professional Rainmeter widget suite designed for serious traders. This toolset
   
   <table border="0">
     <tr>
-      <td><img src="screenshots/photo-example-7.png" width="400"></td>
+      <td><img src="screenshots/photo-example-1.png" width="400"></td>
       <td><img src="screenshots/photo-example-8.png" width="400"></td>
     </tr>
     <tr>
-      <td><img src="screenshots/photo-example-1.png" width="400"></td>
+      <td><img src="screenshots/photo-example-7.png" width="400"></td>
       <td><img src="screenshots/photo-example-3.png" width="400"></td>
     </tr>
     <tr>
