@@ -74,18 +74,79 @@ Highly flexible criteria tracking optimized for monitoring setups and execution 
 
 ---
 
+# 🖋️ Customize & Trading Tracker Variables Guide (User Settings)
+
+You can fully customize your Trading Tracker by editing the `[Variables]` section within the `.ini` file. Below is a detailed breakdown of each setting:
+
+## 1. General Appearance & Features
+Controls the basic layout and visibility of UI elements.
+
+| Variable | Description | Recommended / Example |
+| :--- | :--- | :--- |
+| `TITLE` | The title displayed at the top of the widget. | `TITLE=Daily Trading Rules` |
+| `SolidColor` | Background color and transparency (R,G,B,Alpha). | `0,0,0,150` (Dark Semi-transparent) |
+| `SkinWidth` | The overall width of the widget. | `350` (Recommended minimum) |
+| `SHOW_REMIND` | Toggle "Reminder" icons (Does not affect progress). | `0` (Off), `1` (On) |
+| `SHOW_IMPORTANT`| Toggle "Major" icons (Affects 80% of progress). | `0` (Off), `1` (On) |
+| `SHOW_DATE` | Show/Hide the date at the bottom. | `0` (Off), `1` (On) |
+| `SHOW_TIME` | Show/Hide the time (Static, updates on refresh). | `0` (Off), `1` (On) |
+
+## 2. Typography & Dynamic Scaling
+This widget uses **Dynamic Proportional Scaling**. You only need to adjust `FONT_SIZE`, and other dimensions will scale automatically to maintain alignment.
+
+| Variable | Description | Default Formula / Ref |
+| :--- | :--- | :--- |
+| `FONT_FACE` | The name of the font to be used. | `Inter`, `Arial`, `Roboto` |
+| `FONT_SIZE` | Base font size for all text. | `12` (Default), `15` (Large) |
+| `LINE_HEIGHT` | Vertical spacing between task lines. | `(#FONT_SIZE# * 2.1)` |
+| `BUTTON_SIZE` | Size of all action icons (Add, Refresh, etc.). | `(#FONT_SIZE# + 2)` |
+| `BAR_HEIGHT` | Thickness of the progress bar at the bottom. | `(#FONT_SIZE# * 2)` |
+
+## 3. Color Configuration
+Colors use the format `Red, Green, Blue, Alpha` (Range: 0-255).
+
+### 🔹 Task Text Colors
+| Task Type | Active (Pending) Color | Ticked (Completed) Color |
+| :--- | :--- | :--- |
+| **Normal Rules** | `ACTIVE_TASK_COLOR` | `DONE_TASK_COLOR` |
+| **Major Rules** | `IMPORTANT_TASK_COLOR` | `DONE_IMPORTANT_TASK_COLOR` |
+
+### 🔹 Progress Bar Colors
+* **ColorTodo**: Background color of the bar (Incomplete portion).
+* **ColorDone**: Fill color for completed normal rules.
+* **ColorMajorDone**: Fill color for completed major rules (Usually a high-contrast color).
+
+## 4. Advanced Logic
+| Variable | Description | Default Value |
+| :--- | :--- | :--- |
+| `MAX_MAJOR_DONE_RATE` | Max percentage weight for rules marked as "Major". | `80` (Major rules take 80%) |
+| `TRASH_LIMIT` | Maximum number of deleted items kept in the trash. | `10` |
+
+---
+
 ## 📦 Installation / 安裝步驟
+1. Install [Rainmeter](https://www.rainmeter.net/) if you don’t have it already.
+2. Load this skin in Rainmeter.
+3. Customize your trading setups and daily rules to track your trades.
+4. Use it while taking screenshots to document your trading journey.
 
-1. **Install Rainmeter**: Download from [rainmeter.net](https://www.rainmeter.net/).
-2. **Download Suite**: Place the folder in `Documents\Rainmeter\Skins\`.
-3. **Activate Clock**: Load `MarketClock > MarketClock.ini`.
-4. **Activate Tracker**: Load `.ini` from `Setups-ICT` (or your custom folder).
-5. **Sync Data**: Use Dropbox/OneDrive to sync rules across multiple PCs.
+###### Via Installer
 
-1. **下載 Rainmeter** 並將此資料夾放入 `Documents\Rainmeter\Skins\`。
-2. **啟動時鐘**：載入 `MarketClock.ini`。
-3. **啟動追蹤器**：載入 `Setups-ICT` 資料夾下的 `.ini` 檔案。
-4. **同步數據**：可將 Skins 路徑設於雲端空間，實現多端同步。
++ Go to the [Releases](https://github.com/beer/rainmeter-trading-tracker/releases) page and download the latest .rmskin file.
++ Install skin with a double click to the downloaded file.
++ [Activate the skin](#activate-skin)
+
+###### Via Source Code
+
+- Download this source code and place the entire `rainmeter-trading-tracker` folder in the location of your Rainmeter skin. Generally it is look like `C:\Users\<USERNAME>\Documents\Rainmeter\Skins\`
+- [Activate the skin](#activate-skin)
+
+##### Activate Skin
+
+- Activate `rainmeter-trading-tracker` skin
+  - You can do this by right-clicking on an already active skin to bring up the Rainmeter menu
+  - Navigate to `Rainmeter > Skins > rainmeter-trading-tracker > Setups/Rules > Large/Medium/Small.ini`
+    - If you do not see `rainmeter-trading-tracker` in the skin selection, try navigating to `Rainmeter > Refresh all`
 
 ---
 
