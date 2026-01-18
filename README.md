@@ -1,138 +1,97 @@
-# ✔️ Rainmeter Trading Tracker
+# ✔️ Rainmeter Trading Suite (Trading Clock & Task Tracker)
 
-A small Rainmeter widget to help track trading setups and monitor daily trading rules. Designed for traders who want a quick reference while taking screenshots for their trading journey.
-This project is based on [rainmeter-todo](https://github.com/alperenozlu/rainmeter-todo), with additional features tailored for trading, including setup tracking, rule checks, and multi-layered progress tracking.
+A professional Rainmeter widget suite designed for serious traders. This toolset combines a high-precision market timing engine with a rule-based task tracker to help maintain awareness and discipline during live trading and journaling.
 
-## 🎞️ Preview
+這是一套為專業交易員打造的 Rainmeter 插件組合。結合了「高精度市場時鐘」與「規則化任務追蹤器」，旨在幫助交易員在截圖記錄與交易日誌中，保持紀律意識與時空同步。
 
-Here are some preview photos you can check out.
+## 🎞️ Preview / 預覽
 
-![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-6.png)
-![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-1.png)
-![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-3.png)
-![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-4.png)
-![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-5.png)
-![Screenshot of Rainmeter Trading-Tracker](screenshots/photo-example-2.png)
-
-
-## 📝 Features
-
-- **Task Management**: Add, Delete, and Reorder criteria with ease. Supports "Remind" and "Important" flagging.
-- **Trash Bin System**: Recover accidentally deleted rules or setups.
-- **Screenshot Mode**: Hide edit options for a cleaner widget.
-- **Minimize Mode**: Toggle between a full list and a clean title-only view.
-- **Multi-Layer Progress Bar**: Visualizes Major Tasks (Important) and Minor Tasks separately within a single unified bar.
-- **Chinese Support**: an be in Chinese, but needs to be copy-pasteable.
-
-## Install
-
-1. Install [Rainmeter](https://www.rainmeter.net/) if you don’t have it already.
-2. Load this skin in Rainmeter.
-3. Customize your trading setups and daily rules to track your trades.
-4. Use it while taking screenshots to document your trading journey.
-
-###### Via Installer
-
-+ Go to the [Releases](https://github.com/beer/rainmeter-trading-tracker/releases) page and download the latest .rmskin file.
-+ Install skin with a double click to the downloaded file.
-+ [Activate the skin](#activate-skin)
-
-###### Via Source Code
-
-- Download this source code and place the entire `rainmeter-trading-tracker` folder in the location of your Rainmeter skin. Generally it is look like `C:\Users\<USERNAME>\Documents\Rainmeter\Skins\`
-- [Activate the skin](#activate-skin)
-
-##### Activate Skin
-
-- Activate `rainmeter-trading-tracker` skin
-  - You can do this by right-clicking on an already active skin to bring up the Rainmeter menu
-  - Navigate to `Rainmeter > Skins > rainmeter-trading-tracker > Setups/Rules > Large/Medium/Small.ini`
-    - If you do not see `rainmeter-trading-tracker` in the skin selection, try navigating to `Rainmeter > Refresh all`
-
-# 🖋️ Customize & Trading Tracker Variables Guide (User Settings)
-
-You can fully customize your Trading Tracker by editing the `[Variables]` section within the `.ini` file. Below is a detailed breakdown of each setting:
-
-## 1. General Appearance & Features
-Controls the basic layout and visibility of UI elements.
-
-| Variable | Description | Recommended / Example |
-| :--- | :--- | :--- |
-| `TITLE` | The title displayed at the top of the widget. | `TITLE=Daily Trading Rules` |
-| `SolidColor` | Background color and transparency (R,G,B,Alpha). | `0,0,0,150` (Dark Semi-transparent) |
-| `SkinWidth` | The overall width of the widget. | `350` (Recommended minimum) |
-| `SHOW_REMIND` | Toggle "Reminder" icons (Does not affect progress). | `0` (Off), `1` (On) |
-| `SHOW_IMPORTANT`| Toggle "Major" icons (Affects 80% of progress). | `0` (Off), `1` (On) |
-| `SHOW_DATE` | Show/Hide the date at the bottom. | `0` (Off), `1` (On) |
-| `SHOW_TIME` | Show/Hide the time (Static, updates on refresh). | `0` (Off), `1` (On) |
-
-## 2. Typography & Dynamic Scaling
-This widget uses **Dynamic Proportional Scaling**. You only need to adjust `FONT_SIZE`, and other dimensions will scale automatically to maintain alignment.
-
-| Variable | Description | Default Formula / Ref |
-| :--- | :--- | :--- |
-| `FONT_FACE` | The name of the font to be used. | `Inter`, `Arial`, `Roboto` |
-| `FONT_SIZE` | Base font size for all text. | `12` (Default), `15` (Large) |
-| `LINE_HEIGHT` | Vertical spacing between task lines. | `(#FONT_SIZE# * 2.1)` |
-| `BUTTON_SIZE` | Size of all action icons (Add, Refresh, etc.). | `(#FONT_SIZE# + 2)` |
-| `BAR_HEIGHT` | Thickness of the progress bar at the bottom. | `(#FONT_SIZE# * 2)` |
-
-## 3. Color Configuration
-Colors use the format `Red, Green, Blue, Alpha` (Range: 0-255).
-
-### 🔹 Task Text Colors
-| Task Type | Active (Pending) Color | Ticked (Completed) Color |
-| :--- | :--- | :--- |
-| **Normal Rules** | `ACTIVE_TASK_COLOR` | `DONE_TASK_COLOR` |
-| **Major Rules** | `IMPORTANT_TASK_COLOR` | `DONE_IMPORTANT_TASK_COLOR` |
-
-### 🔹 Progress Bar Colors
-* **ColorTodo**: Background color of the bar (Incomplete portion).
-* **ColorDone**: Fill color for completed normal rules.
-* **ColorMajorDone**: Fill color for completed major rules (Usually a high-contrast color).
-
-## 4. Advanced Logic
-| Variable | Description | Default Value |
-| :--- | :--- | :--- |
-| `MAX_MAJOR_DONE_RATE` | Max percentage weight for rules marked as "Major". | `80` (Major rules take 80%) |
-| `TRASH_LIMIT` | Maximum number of deleted items kept in the trash. | `10` |
+<div align="center">
+  <img src="screenshots/photo-example-6.png" width="800">
+  <br>
+  <p><i>Synchronized high-precision market clock and trading discipline tracker.</i></p>
+  
+  <table border="0">
+    <tr>
+      <td><img src="screenshots/photo-example-7.png" width="400"></td>
+      <td><img src="screenshots/photo-example-8.png" width="400"></td>
+    </tr>
+    <tr>
+      <td><img src="screenshots/photo-example-1.png" width="400"></td>
+      <td><img src="screenshots/photo-example-3.png" width="400"></td>
+    </tr>
+    <tr>
+      <td><img src="screenshots/photo-example-4.png" width="400"></td>
+      <td><img src="screenshots/photo-example-5.png" width="400"></td>
+    </tr>
+  </table>
+</div>
 
 ---
 
-## 💡 Quick Tips for Customization
-1. **Visual Balance**: For a modern look, try using a vibrant Cyan or Orange for `ColorMajorDone`.
-2. **Transparency**: The 4th value (Alpha) in colors controls opacity. `0` is invisible, `255` is fully solid.
-3. **Applying Changes**: After saving your `.ini` file, **Right-click the widget > Refresh skin** to see the updates immediately.
+## 🕒 Module 1: Professional Trading Clock / 模組 1：專業交易時鐘
+A timing engine specifically calibrated for New York markets with institutional session logic and economic data.
+專為紐約市場校準的高精度時間引擎，整合了機構級的時段邏輯與經濟數據。
 
-
-## 🤖 Technical Details & Notes
-
-### 🗒️ Tasks and Editing Tasks Manually
-
-In an emergency, you may want to edit the task file manually. For this, you must first know the structure of the task file.
-
-- **First Line**: `task|x|x` (Header info, do not delete).
-- **Remind Tasks**: Excluded from the progress bar to focus on core execution.
-- **Important Tasks**: Counted as "Major Progress" and highlighted on the bar.
-
-| 1         | 2            | 3            | 4            |
-| --------- | ------------ | ------------ | ------------ |
-| Task Text | Is Completed | Is Remind | Is Important |
-
-For example, a completed and important task would look like this `task title|x||x` 
-    
-If it's just a completed task, it's look like `task title|x||` 
-
-### ☁️ Sync With Multiple Device
-
-Added and deleted tasks are stored on a file basis. Since there is no database connection, you can use programs such as Google Drive, Dropbox, and OneDrive to synchronize between multiple devices.
-
-- Go to `rainmeter-trading-tracker` folder in your Rainmeter skins location
-- Start the sync process for the folder you are using through the cloud program you use.
-
-### 😔 Known Bugs and Issues
-- If Windows commands are entered as a task, the relevant command is triggered.
-- If the task contains the `'` character, it's not saved.
+- **Auto DST / 自動夏令時**: Intelligent detection of UTC-4 / UTC-5. / 智能偵測 DST，無需手動調整。
+- **2026 Calendar / 2026 市場日曆**: Built-in US holidays and early close (13:00) alerts. / 內建 2026 全年美股節日與提早收盤提醒。
+- **Session Logic / 交易時段邏輯**: Real-time detection of **Asia, London, NY AM/PM, and Silver Bullet** sessions with contextual UI colors. / 即時識別各大時段，UI 顏色隨當前活躍時段自動切換。
+- **Economic Calendar / 智能財經日曆**: Auto-fetches "High Impact USD" news from Forex Factory with countdowns and 10s flash warnings. / 自動抓取高影響力 USD 新聞，具備新聞倒數與 10 秒閃爍預警。
+- **Simulation Mode / 穿越模擬模式**: "Time Travel" feature for backtesting behavior on any specific date. / 開發者可設定特定日期測試時段變換與 UI 行為。
 
 ---
-*This widget is tailored for professional trading documentation. Contributions and feedback are welcome!*
+
+## 📝 Module 2: Trading Task Tracker / 模組 2：交易規則追蹤器
+Highly flexible criteria tracking optimized for monitoring setups and execution rules.
+高度靈活的進場條件追蹤工具，透過權重計算，將你的交易紀律視覺化。
+
+- **Flexible Structure / 完全自定義結構**: 
+  - **Renameable Folders**: Rename `Setups-ICT` to anything (e.g., `SMC-Strategy`). / 可隨意更改資料夾名稱。
+  - **Duplicate .ini**: Rename or duplicate `.ini` files to run multiple independent trackers. / 檔案可隨意改名或複制，同時開啟多個獨立策略追蹤器。
+- **Weighted Progress / 權重進度條**: Visualize Major vs. Minor rules; Important tasks can hold 80% weight. / 區分主要與一般條件，主要條件可佔進度條 80%。
+- **Screenshot Mode / 截圖模式**: Instantly hide edit icons for a clean look in your journal. / 一鍵隱藏編輯按鈕，呈現乾淨介面供截圖存檔。
+- **Trash Bin / 垃圾桶系統**: Recover accidentally deleted rules. / 防止意外刪除重要的交易規則。
+
+---
+
+## 🛠️ Configuration Guide / 設定指南
+
+### 1. Market Clock Settings (`MarketClock.ini`)
+| Variable / 變數 | Description / 說明 |
+| :--- | :--- |
+| `Scale` | Overall UI size (e.g., `3.4` for 4K screens). / 整體縮放比例（如 4K 螢幕建議設定 3.4 以上）。 |
+| `SHOW_NEWS` | Expand or collapse the news panel (`0`/`1`). / 開啟或關閉下方的新聞面板。 |
+
+### 2. Task Tracker Settings (`Rules.ini` / `Setup.ini`)
+| Category / 類別 | Variable / 變數 | Description / 說明 |
+| :--- | :--- | :--- |
+| **Layout / 佈局** | `FONT_SIZE` | Base font size; all icons and bars scale accordingly. / 基礎字體大小，Icon 與進度條會自動縮放。 |
+| | `SkinWidth` | Window width (recommended min: 350). / 視窗寬度，推薦不要小於 350。 |
+| **Logic / 邏輯** | `MAX_MAJOR_DONE_RATE` | Progress bar weight for "Important" tasks (Default: 80). / 主要條件被勾選後佔進度條的比例。 |
+| | `SHOW_IMPORTANT` | Toggle Major (Star) rule buttons. / 是否啟用主要條件（星號）功能。 |
+| **Color / 顏色** | `ColorMajorDone` | Progress bar color for completed major rules. / 主要條件達成時的進度條顏色。 |
+| | `SolidColor` | Background color and transparency (R,G,B,Alpha). / 背景色與透明度。 |
+
+---
+
+## 📦 Installation / 安裝步驟
+
+1. **Install Rainmeter**: Download from [rainmeter.net](https://www.rainmeter.net/).
+2. **Download Suite**: Place the folder in `Documents\Rainmeter\Skins\`.
+3. **Activate Clock**: Load `MarketClock > MarketClock.ini`.
+4. **Activate Tracker**: Load `.ini` from `Setups-ICT` (or your custom folder).
+5. **Sync Data**: Use Dropbox/OneDrive to sync rules across multiple PCs.
+
+1. **下載 Rainmeter** 並將此資料夾放入 `Documents\Rainmeter\Skins\`。
+2. **啟動時鐘**：載入 `MarketClock.ini`。
+3. **啟動追蹤器**：載入 `Setups-ICT` 資料夾下的 `.ini` 檔案。
+4. **同步數據**：可將 Skins 路徑設於雲端空間，實現多端同步。
+
+---
+
+## 🤖 Advanced Simulation (Developer Only) / 進階模擬測試
+To test future dates, edit the top of `MarketClock.lua`:
+若要測試未來日期，請修改 `MarketClock.lua` 頂部：
+```lua
+DEBUG_MODE = true
+DEBUG_NY_TIME_STR = "2026-01-14 09:30:00" -- Jump to NY Open / 模擬紐約開盤
