@@ -1,0 +1,11 @@
+[
+  {
+    "start": 2100,
+    "stop": 2400,
+    "name": "TIME TO BED",
+    "color": "138,43,226,15",
+    "fColor": "255,255,255,150",
+    "countdown": 1800,
+    "blinking": 10
+  }
+]
