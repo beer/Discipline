@@ -9,17 +9,19 @@ WHITE_COLOR="255,255,255,200"
 LIGHT_COLOR="255,255,255,150"
 COUNTDOWN_COLOR="255,255,255,150"
 ALERT_COLOR="255,0,0,150"
+WARNING_COLOR="255,191,0,120" -- 琥珀色
 
 -- Notification System State / 通知系統狀態變數
 notifyTimer = 0
 notifyMessage = ""
 notifyColor = WHITE_COLOR
 lastMacroState = false
+hasAnnouncedToday = false
 NOW_UTC = os.time(os.date("!*t"))
 
 -- DEBUG SETTINGS: Simulation Mode / 調試設定：模擬穿越模式
-DEBUG_MODE = true
-DEBUG_NY_TIME_STR="2026-01-19 08:41:00"
+DEBUG_MODE = false
+--DEBUG_NY_TIME_STR="2026-01-19 08:41:00"
 --DEBUG_NY_TIME_STR="" -- Target simulation time / 目標模擬時間
 
 local nextRetryTime = 0 
@@ -37,7 +39,7 @@ local holidays2026 = {
     ["2026-04-03"] = "GOOD FRIDAY",
     ["2026-05-25"] = "MEMORIAL DAY",
     ["2026-06-19"] = "JUNETEENTH",
-    ["2026-07-03"] = "INDEPENDENCE DAY (OBS)",
+    ["2026-07-03"] = "INDEPENDENCE DAY",
     ["2026-09-07"] = "LABOR DAY",
     ["2026-11-26"] = "THANKSGIVING",
     ["2026-12-25"] = "CHRISTMAS DAY"
@@ -413,6 +415,28 @@ function Update()
     end
     lastMacroState = (m < 15 or m >= 45)
 
+    -- --- [特殊交易日判定] ---
+    local hideWarningIcon = 1 -- 預設隱藏
+    local isSpecialDay = false
+    if (holidayName or earlyCloseName) and (SKIN:GetVariable('SHOW_MSG') == "1") then
+        isSpecialDay = true
+        hideWarningIcon = 0 -- 特殊日子則顯示
+        -- 更新隱藏狀態
+        SKIN:Bang('!SetVariable', 'HideStatusIcon', hideWarningIcon)
+    end
+
+    -- --- [啟動時彈出強力通知] (每天僅觸發一次) ---
+    if isSpecialDay and not hasAnnouncedToday then
+        local label = "EARLY CLOSE 13:00"
+        if holidayName then
+            label = holidayName .. " (CLOSE 13:00)"
+        end
+
+        -- 顯示 5 秒強效通知
+        SetNotification("" .. label, 5, WARNING_COLOR)
+        hasAnnouncedToday = true
+    end
+
     -- Final UI Priority Selection / 最終 UI 優先級選擇
     local finalMessage, finalCountdown = resName, countdown_text
     local finalMsgColor, finalBarColor = resFont, barColor
@@ -669,5 +693,30 @@ function ToggleNews(ny_now_ts, redraw)
         SKIN:Bang('!SetVariable', 'HideNewsToggleButton', '1')
         SKIN:Bang('!HideMeterGroup', 'NewsGroup')
         lastShowNewsState = 0
+    end
+end
+
+
+-- 當滑鼠懸停在 Icon 上時觸發
+function ShowIconNotice()
+    -- 這裡要重新抓取當下的日期與名稱
+    -- 或者你可以將當天的特殊名稱存在一個全域變數中
+    --local ny_now_ts = GetCurrentTime(true)
+    local dateKey = os.date("%Y-%m-%d", ny_now_ts)
+    local hName = holidays2026[dateKey]
+    local eName = earlyClose2026[dateKey]
+    
+    local noticeMsg = ""
+    if hName then
+        noticeMsg = hName .. " (CLOSE 13:00)"
+    elseif eName then
+        noticeMsg = "EARLY CLOSE: 13:00"
+    end
+
+    -- 調用你現有的通知系統 (顯示 5 秒，使用琥珀色)
+    if noticeMsg ~= "" then
+        SetNotification(noticeMsg, 2, WARNING_COLOR)
+        -- 為了讓通知立刻顯示，我們手動更新一次 Update
+        SKIN:Bang('!Update')
     end
 end
