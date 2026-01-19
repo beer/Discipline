@@ -90,7 +90,6 @@ function Update()
 
             -- 3. 獲取倒數設定
             local sessCountdown = tonumber(sess.countdown) or DEFAULT_COUNTDOWN
-            print("sessCountdown:" .. sessCountdown .. ", showCountdown:" .. showCountdown)
 
             -- 【核心修正】：只有在符合所有條件時，才去更新顯示變數
             if not is_already_active and diff <= sessCountdown then
@@ -130,10 +129,7 @@ function Update()
 
     -- 5. 輸出變數至 Rainmeter
     -- 判定是否隱藏倒數與進度條：必須有 JSON 且正在倒數
-    print("hasSessions:" .. tostring(hasSessions) .. ", showCountdown:" .. showCountdown)
     local finalHide = (hasSessions and showCountdown == 1) and "0" or "1"
-    print("finalHide:" .. finalHide)
-    
     
     SKIN:Bang('!SetVariable', 'Message', finalMsg)
     SKIN:Bang('!SetVariable', 'MessageColor', finalColor)
