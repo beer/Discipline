@@ -138,6 +138,7 @@ function Update()
     SKIN:Bang('!SetVariable', 'BarPercent', barPercent)
     SKIN:Bang('!SetVariable', 'NextSessionColor', ForceOpaque(nextColor,150))
     SKIN:Bang('!SetVariable', 'HideSessElements', finalHide)
+    SKIN:Bang('!SetVariable', 'CurrentDate', os.date("%b %d %a", now_ts))
 
     return os.date("%H:%M:%S", now_ts)
 end
