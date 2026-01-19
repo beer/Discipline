@@ -7,9 +7,21 @@
 # 如果你想保留範例規則，請註解掉下面這兩行
 **/tasks-*.txt
 **/trash-*.txt
+/Setups-ICT/*.ini
+/Restrict/*.ini
+/Rules/*.ini
+/Monitor/*.ini
 !**/tasks-Daily.txt
 !**/tasks-OTE.txt
 !**/tasks-PO3.txt
+!**/tasks-Exit.txt
+!**/tasks-Trend.txt
+!/Setups-ICT/OTE.ini
+!/Setups-ICT/PO3.ini
+!/Restrict/Daily.ini
+!/Rules/Exit.ini
+!/Monitor/Trend.ini
+
 
 
 # 忽略 Lua 產生的動態包含檔 (Ignore dynamic include files)
