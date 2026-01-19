@@ -18,12 +18,14 @@ lastMacroState = false
 NOW_UTC = os.time(os.date("!*t"))
 
 -- DEBUG SETTINGS: Simulation Mode / 調試設定：模擬穿越模式
-DEBUG_MODE = false
---DEBUG_NY_TIME_STR="2026-01-13 06:50:00"
+DEBUG_MODE = true
+DEBUG_NY_TIME_STR="2026-01-19 08:41:00"
 --DEBUG_NY_TIME_STR="" -- Target simulation time / 目標模擬時間
 
 local nextRetryTime = 0 
 local RETRY_INTERVAL = 3600 -- WebParser retry interval (1hr) / 網頁重試間隔 (1小時)
+
+local sessions = {} -- 用來存放從 JSON 讀入的時段資料
 
 -- ============================================================================
 -- MARKET CALENDAR 2026 / 2026 年市場交易日曆 (休市與提早收盤)
@@ -71,6 +73,18 @@ function Initialize()
     else
         print("JSON Load Error: " .. tostring(err))
     end
+
+    -- 1. 讀取 Sessions.json
+    local sessPath = SKIN:GetVariable('CURRENTPATH') .. "Sessions.json"
+    local sess_f = io.open(sessPath, "r")
+    if sess_f then
+        local content = sess_f:read("*all")
+        sess_f:close()
+        sessions = json.decode(content)
+    end
+    
+    -- 保底預設值 (若讀取失敗)
+    if not sessions then sessions = {} end
 
     local thisMonday = GetThisMonday()
     local filteredPath = SKIN:GetVariable('CURRENTPATH') .."News\\".. thisMonday .. ".json"
@@ -132,7 +146,7 @@ function ProcessNews(ny_reference_ts)
             local diff = event.ny_timestamp - ny_reference_ts
 
             if diff > 0 then
-                local dayStr = os.date("%a", event.ny_timestamp)
+                local dayStr = os.date("%b %d %a", event.ny_timestamp)
                 local shortTime = event.ny_time:sub(-5)
                 
                 -- Detect news within 15 mins / 偵測 15 分鐘內的新聞
@@ -212,13 +226,24 @@ function Update()
     local wday, h = d.wday, d.hour
     local dateKey = os.date("%Y-%m-%d", ny_now_ts)
 
+    -- --- 判定各項開關 (期貨精確版) ---
     local holidayName = holidays2026[dateKey]
     local earlyCloseName = earlyClose2026[dateKey]
+    
+    -- A. 徹底關閉：週五 17:00 後 (結算) ~ 週六全天
     local isStrictlyClosed = (wday == 6 and h >= 17) or (wday == 7)
-    local isHoliday = (holidayName ~= nil)
+    
+    -- B. 週日判定：期貨在週日 18:00 (ET) 開盤
+    -- 18:00 之前是 PrepMode，18:00 之後就是正常交易時段
+    local isSundayBeforeOpen = (wday == 1 and h < 18)
+    
+    -- C. 假日與提早收盤判定：期貨通常在假日 13:00 (ET) 提前休市
+    local isHolidayClosed = (holidayName ~= nil and h >= 13)
     local isEarlyClosePassed = (earlyCloseName and h >= 13)
-    local isSunday = (wday == 1)
-    local isPrepMode = isSunday or isHoliday or isEarlyClosePassed
+    
+    -- D. 準備模式總結
+    -- 只有在：週日前半段 OR 假日後半段 OR 提早收盤後半段，才顯示 PREP
+    local isPrepMode = isSundayBeforeOpen or isHolidayClosed or isEarlyClosePassed
 
     -- [Path 1] Market Strictly Closed / 徹底關閉路徑
     if isStrictlyClosed then
@@ -277,19 +302,32 @@ function Update()
     local hhmm = h * 100 + m
     local total_now_seconds = (h * 3600) + (m * 60) + s
 
-    -- Trading Session Table / 交易時段資料表
-    local sessions = {
-        {start=0300, stop=0400, name="SILVER BULLET",    color="0,80,150,100", fColor="255,255,255,150"},
-        {start=1000, stop=1100, name="SILVER BULLET",    color="0,80,150,100", fColor="255,255,255,150"},
-        {start=1400, stop=1500, name="SILVER BULLET",    color="0,80,150,100", fColor="255,255,255,150"},
-        {start=2000, stop=2400, name="ASIA SESSION",     color="255,215,0,30",  fColor="255,255,255,150"},
-        {start=0200, stop=0500, name="LONDON SESSION",   color="0,255,255,20",  fColor="255,255,255,150"},
-        {start=0930, stop=1100, name="NY AM SESSION",    color="238,118,104,15",  fColor="255,255,255,150"},
-        {start=1330, stop=1600, name="NY PM SESSION",    color="238,118,104,15", fColor="255,255,255,150"}
-    }
+    -- Trading Session
 
     local resName, resColor, resFont = OUT_OF_SESSION, OUT_OF_SESSION_COLOR, OUT_OF_SESSION_FONT_COLOR
     local barPercent, barColor = 0, "0,0,0,0"
+    -- [閃爍預警變數]
+    local flashColor = nil
+    local flashState = math.floor(os.clock() % 2) -- 利用秒數產生 0, 1 交替的閃爍訊號
+    -- 遍歷所有時段，尋找「即將開始」的目標
+    for _, sess in ipairs(sessions) do
+        local start_sec = (math.floor(sess.start / 100) * 3600) + (sess.start % 100 * 60)
+        local diff = start_sec - total_now_seconds
+        
+        -- 處理跨日開盤 (例如週日 18:00)
+        if diff < -43200 then diff = diff + 86400 end
+        if diff > 43200 then diff = diff - 86400 end
+
+        -- 核心判定：即將開始前 N 秒
+        if sess.blinking and diff > 0 and diff <= sess.blinking then
+            if flashState == 1 then
+                flashColor = ForceOpaque(sess.color, 100) -- 閃爍亮色：下一時段的顏色
+            else
+                flashColor = nil -- 暗色時回歸原本的底色
+            end
+            break
+        end
+    end
 
     -- Find Current Active Sessions / 搜尋當前活躍時段
     local active_sessions = {}
@@ -379,6 +417,12 @@ function Update()
     local finalMessage, finalCountdown = resName, countdown_text
     local finalMsgColor, finalBarColor = resFont, barColor
     local finalBarPercent, finalCountdownColor = barPercent, COUNTDOWN_COLOR
+    local finalSessionColor = resColor -- 這是在 loop 完後決定的當前時段顏色 (例如 London 的淺藍)
+
+    -- 如果有預警閃爍，強制覆蓋
+    if flashColor then
+        finalSessionColor = flashColor
+    end
 
     if notifyTimer > 0 and currentTime < notifyTimer then
         finalMessage, finalMsgColor = notifyMessage, notifyColor
@@ -404,7 +448,7 @@ function Update()
     SKIN:Bang('!SetVariable', 'MacroColor', mColor)
     SKIN:Bang('!SetVariable', 'HideMacro', hideMacro)
     SKIN:Bang('!SetVariable', 'BarPercent', finalBarPercent)
-    SKIN:Bang('!SetVariable', 'CurrentSessionColor', resColor)         
+    SKIN:Bang('!SetVariable', 'CurrentSessionColor', finalSessionColor)         
     SKIN:Bang('!SetVariable', 'SubSessionColor', ForceOpaque(subColor, 150))             
 
     -- News UI Toggle Monitoring / 新聞 UI 開關監控
@@ -471,22 +515,74 @@ function GetThisMonday()
     return os.date("%Y-%m-%d", targetTime)
 end
 
--- Filter News JSON data / 過濾新聞 JSON 資料
+-- 過濾邏輯 (權重優先級 + 單位過濾 + 重複時間去重)
 function FilterNews(rawData)
     local data = json.decode(rawData)
     local filtered = {}
+    local timeSlots = {} -- 用於暫存每個時間點「最重要」的新聞
+    
+    -- 定義優先級權重 (分數越高越優先保留)
+    local priorityWeights = {
+        ["FOMC"] = 110,
+        ["GDP"] = 100,
+        ["CPI"] = 95,
+        ["PCE"] = 90,
+        ["Non-Farm Employment Change"] = 85,
+        ["Unemployment Rate"] = 80,
+        ["PPI"] = 75,
+        ["Claims"] = 70 -- 初請失業金
+    }
+    
     if not data then return filtered end
+
     for _, event in ipairs(data) do
+        -- 1. 條件過濾：USD + High Impact
         if event.country == "USD" and event.impact == "High" then
+            -- 2. 解析時間與時間戳
             local year, month, day, hr, min, sc = event.date:match("(%d+)-(%d+)-(%d+)T(%d+):(%d+):(%d+)")
-            local ny_date_string = string.format("%s-%s-%s %s:%s", year, month, day, hr, min)
             local ev_ny_ts = os.time({year=year, month=month, day=day, hour=hr, min=min, sec=sc})
-            table.insert(filtered, {
-                title = event.title, country = event.country, impact = event.impact,
-                ny_time = ny_date_string, ny_timestamp = ev_ny_ts
-            })
+            local ny_date_string = string.format("%s-%s-%s %s:%s", year, month, day, hr, min)
+
+            -- 3. 【淨化標題】：移除 q/q, m/m, y/y 以及括號與多餘空格
+            local cleanTitle = event.title
+            cleanTitle = cleanTitle:gsub("%s?%a/%a%s?", "") -- 移除 m/m, q/q, y/y
+            cleanTitle = cleanTitle:gsub("%s?%(%a/%a%)%s?", "") -- 移除 (m/m) 等帶括號的格式
+            cleanTitle = cleanTitle:gsub("^%s*(.-)%s*$", "%1") -- 去除首尾空格
+
+            -- 4. 計算權重分
+            local currentWeight = 0
+            for keyword, weight in pairs(priorityWeights) do
+                if cleanTitle:find(keyword) then
+                    currentWeight = weight
+                    break
+                end
+            end
+
+            -- 5. 權重比對：同時間僅保留最高分者
+            if not timeSlots[ev_ny_ts] or currentWeight > timeSlots[ev_ny_ts].weight then
+                timeSlots[ev_ny_ts] = {
+                    data = {
+                        title = cleanTitle, -- 存入淨化後的標題
+                        country = event.country,
+                        impact = event.impact,
+                        ny_time = ny_date_string,
+                        ny_timestamp = ev_ny_ts
+                    },
+                    weight = currentWeight
+                }
+            end
         end
     end
+
+    -- 6. 排序與輸出
+    local sortedKeys = {}
+    for ts in pairs(timeSlots) do table.insert(sortedKeys, ts) end
+    table.sort(sortedKeys)
+
+    for _, ts in ipairs(sortedKeys) do
+        table.insert(filtered, timeSlots[ts].data)
+    end
+
     return filtered
 end
 

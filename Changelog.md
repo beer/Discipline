@@ -1,5 +1,38 @@
 # Changelog
 
+## [1.3.0] - 2026-01-19
+
+### Added
+- **Futures-Centric Market Logic**: 
+  - Rewrote the market state engine to align with CME/CBOT futures schedules.
+  - Implemented **Sunday Open Logic**: The suite now transitions from "Weekend Prep" to active trading at 18:00 NY Time on Sundays.
+  - Implemented **Holiday Partial Session Logic**: During US federal holidays (e.g., MLK Day), the clock now remains active for the morning session and enters "Holiday Prep" mode only after the 13:00 Early Close.
+- **Externalized Session Management**:
+  - Migrated all trading session definitions from hardcoded Lua tables to an external `Sessions.json` file.
+  - Added support for dynamic session reloading without modifying core script logic.
+- **Pre-Session Visual Alert (Blinking System)**:
+  - Developed a "Pre-Alert" engine that triggers background color flashing $N$ seconds (customizable via `blinking` variable in JSON) before a session begins.
+  - Implemented a **State-Aware Flash Override**: Blinking automatically ceases upon session entry to ensure visual stability during active trading.
+- **Advanced News Filtering & Prioritization**:
+  - **Conflict Resolution Logic**: When multiple "High Impact" news events occur at the same timestamp, the engine now uses a weight-based priority system (e.g., FOMC > GDP > CPI) to display the most critical data.
+  - **String Purification**: Implemented regex-based title cleaning to remove cluttering units such as `q/q`, `m/m`, and `y/y` from the news display.
+
+### Changed
+- **Session UI Architecture**:
+  - Updated **Asia Session** default start time to 18:00 to match the futures market globex open.
+  - Redefined **Silver Bullet** visual identity to "Plasma Purple" (`138,43,226`) to eliminate visual collision with Macro Bar (Deep Blue) overlays.
+- **Blinking Animation Controller**: Utilizes `os.clock()` modulation for the flash state to ensure consistent 1Hz oscillation regardless of the Rainmeter `Update` frequency.
+
+### Fixed
+- **Sunday "Dead Zone" Bug**: Resolved an issue where the clock would stay in "Weekend Prep" for the entire Sunday, causing traders to miss the Sunday evening open.
+- **News Redundancy**: Fixed the "Duplicate Timestamp Overcrowding" in the news panel by implementing a time-slot hashing algorithm in the `FilterNews` function.
+- **Cross-Day Duration Math**: Fixed a calculation error in `distToStart` for sessions spanning across the 00:00 UTC/NY threshold.
+
+### Technical Notes
+- **Priority Weights**: The current hierarchy is set as: `FOMC (110) > GDP (100) > CPI (95) > PCE (90) > NFP (85)`.
+- **JSON Schema**: `Sessions.json` now requires `start`, `stop`, `name`, `color`, `fColor`, and `blinking` keys for full functionality.
+
+
 ## [1.2.0] - 2026-01-18
 
 ### Added
