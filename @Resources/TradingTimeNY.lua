@@ -240,12 +240,13 @@ function Update()
     local isSundayBeforeOpen = (wday == 1 and h < 18)
     
     -- C. 假日與提早收盤判定：期貨通常在假日 13:00 (ET) 提前休市
-    local isHolidayClosed = (holidayName ~= nil and h >= 13)
-    local isEarlyClosePassed = (earlyCloseName and h >= 13)
+    local isHolidayClosed = (holidayName ~= nil and h >= 13 and h <= 18)
+    local isEarlyClosePassed = (earlyCloseName and h >= 13 and h <= 18)
     
     -- D. 準備模式總結
     -- 只有在：週日前半段 OR 假日後半段 OR 提早收盤後半段，才顯示 PREP
     local isPrepMode = isSundayBeforeOpen or isHolidayClosed or isEarlyClosePassed
+    print("PrepMode: " .. tostring(isPrepMode))
 
     -- [Path 1] Market Strictly Closed / 徹底關閉路徑
     if isStrictlyClosed then
@@ -418,7 +419,7 @@ function Update()
     -- --- [特殊交易日判定] ---
     local hideWarningIcon = 1 -- 預設隱藏
     local isSpecialDay = false
-    if (holidayName or earlyCloseName) and (SKIN:GetVariable('SHOW_MSG') == "1") then
+    if (holidayName or earlyCloseName) and (SKIN:GetVariable('SHOW_MSG') == "1") and (isPrepMode == false) then
         isSpecialDay = true
         hideWarningIcon = 0 -- 特殊日子則顯示
         -- 更新隱藏狀態
