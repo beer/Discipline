@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AHK & Lua 協作紀念碑 - 終極穩定版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-15px) rotate(2deg); } }
+        @keyframes pulse-glow { 0%, 100% { opacity: 1; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.5)); } 50% { opacity: 0.8; filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.2)); } }
+        .animate-float { animation: float 5s ease-in-out infinite; }
+        .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+        .tech-bg {
+            background-color: #020617;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(30, 58, 138, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(67, 56, 202, 0.2) 0%, transparent 40%),
+                linear-gradient(rgba(15, 23, 42, 0.1) 1px, transparent 1px),
+                linear-gradient(90(rgba(15, 23, 42, 0.1) 1px, transparent 1px));
+            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="tech-bg text-slate-100 min-h-screen flex items-center justify-center p-4 md:p-8 font-sans">
+
+    <div id="app" class="max-w-5xl w-full glass-card rounded-3xl shadow-[0_35px_60px_-15px_rgba(0,0,0,0.6)] overflow-hidden relative border border-blue-500/20">
+        
+        <div class="flex flex-col lg:flex-row">
+            <!-- 視覺展示區 -->
+            <div class="lg:w-3/5 p-8 md:p-12 flex flex-col items-center justify-center relative min-h-[500px] border-r border-white/5">
+                
+                <!-- 成功顯示圖片 -->
+                <div id="image-display" class="absolute inset-0 z-20 hidden opacity-0 transition-opacity duration-1000">
+                    <img id="result-image" class="w-full h-full object-cover" src="" alt="我們的數位協作意象">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+                        <div class="text-xs font-mono text-blue-400 bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm border border-blue-500/20">
+                            AI GENERATED • IMAGEN 4.0
+                        </div>
+                        <button onclick="location.reload()" class="p-2 bg-slate-800/80 hover:bg-blue-600 rounded-lg text-white transition-all shadow-lg border border-white/10">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 互動控制核心 -->
+                <div id="core-visual" class="relative z-10 flex flex-col items-center">
+                    <div class="relative w-72 h-72 flex items-center justify-center mb-10">
+                        <!-- 裝飾環 -->
+                        <div class="absolute inset-0 border border-blue-500/10 rounded-full scale-110"></div>
+                        <div class="absolute inset-0 border border-blue-500/20 rounded-full scale-125 animate-pulse"></div>
+                        
+                        <!-- 核心圖示 -->
+                        <div class="relative z-10 p-10 bg-blue-600/10 rounded-full border border-blue-400/20 animate-float">
+                            <i data-lucide="brain-circuit" class="w-24 h-24 text-blue-400 animate-pulse-glow"></i>
+                        </div>
+                    </div>
+
+                    <div id="status-panel" class="text-center mb-8">
+                        <h3 class="text-2xl font-black text-white mb-2 tracking-tight uppercase">數位工作坊連線</h3>
+                        <p class="text-slate-400 text-sm max-w-xs mx-auto">點擊下方按鈕，我會嘗試呼叫 AI 為我們的 AHK & Lua 專案繪製一張代表性的視覺紀念圖。</p>
+                    </div>
+
+                    <button id="gen-btn" onclick="startGeneration()" class="group relative px-10 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold transition-all active:scale-95 flex items-center gap-3 overflow-hidden shadow-[0_0_30px_rgba(59,130,246,0.3)]">
+                        <span class="relative z-10 flex items-center gap-2">
+                            <i data-lucide="wand-2" class="w-5 h-5"></i>
+                            啟動 AI 繪圖儀式
+                        </span>
+                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                    </button>
+                    
+                    <!-- 載入狀態 -->
+                    <div id="loading-indicator" class="hidden flex flex-col items-center gap-4">
+                        <div class="flex gap-1">
+                            <div class="w-2 h-8 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                            <div class="w-2 h-12 bg-blue-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                            <div class="w-2 h-10 bg-indigo-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+                        </div>
+                        <p id="loading-text" class="text-blue-400 text-xs font-mono tracking-widest uppercase">Initializing AI Module...</p>
+                    </div>
+                </div>
+
+                <!-- 回退視覺 (如果失敗) -->
+                <div id="error-visual" class="hidden relative z-10 flex flex-col items-center text-center p-8">
+                    <div class="p-6 bg-red-500/10 rounded-full mb-6 border border-red-500/20">
+                        <i data-lucide="alert-triangle" class="w-16 h-16 text-red-400"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-2">連線暫時中斷</h4>
+                    <p class="text-slate-500 text-xs mb-6 max-w-xs">AI 工作坊目前過於繁忙或環境限制，建議重新整理頁面再試一次，或是保留這份美好的架構文件。</p>
+                    <button onclick="location.reload()" class="text-xs text-blue-400 hover:text-blue-300 font-bold underline">重新嘗試連線</button>
+                </div>
+            </div>
+
+            <!-- 內容說明區 -->
+            <div class="lg:w-2/5 p-8 md:p-12 bg-slate-900/40 backdrop-blur-md flex flex-col justify-center">
+                <div class="flex items-center gap-2 mb-8">
+                    <span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-[10px] font-bold rounded border border-blue-500/30">LATEST BUILD</span>
+                    <span class="text-xs text-slate-500 font-mono">v2.1.0-STABLE</span>
+                </div>
+
+                <h2 class="text-3xl font-extrabold text-white mb-6 leading-tight">
+                    從代碼到<br><span class="text-blue-400">視覺藝術的跨越</span>
+                </h2>
+
+                <div class="space-y-6 mb-10">
+                    <div class="flex gap-4">
+                        <div class="mt-1 p-2 bg-slate-800 rounded-lg text-blue-400">
+                            <i data-lucide="layout" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-200">AHK 互動核心</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed mt-1">完美解決了 DPI 縮放與透明度 ColorKey 問題，打造出漂浮般的輸入體驗。</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="mt-1 p-2 bg-slate-800 rounded-lg text-indigo-400">
+                            <i data-lucide="database" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-200">Lua OOP 框架</h4>
+                            <p class="text-xs text-slate-500 leading-relaxed mt-1">導入 Metatable 實現 Proxy 數據監控，讓每一筆筆記都能自動化、物件化。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-blue-500/5 rounded-2xl border border-blue-500/10">
+                    <p class="text-xs text-blue-300/80 leading-relaxed italic">
+                        「程式碼不只是邏輯的堆砌，它是人類創意與機器執行力交會的火花。」
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const apiKey = ""; 
+        const promptText = "A stunning futuristic workspace for a programmer. A glowing holographic interface showing Rainmeter widgets. Elegant blue and gold digital energy connecting an AutoHotkey icon with a Lua script matrix. Cinematic lighting, hyper-realistic, 8k, concept art style.";
+
+        async function startGeneration() {
+            const genBtn = document.getElementById('gen-btn');
+            const loadingInd = document.getElementById('loading-indicator');
+            const statusPanel = document.getElementById('status-panel');
+            const loadingText = document.getElementById('loading-text');
+
+            genBtn.classList.add('hidden');
+            loadingInd.classList.remove('hidden');
+            statusPanel.classList.add('opacity-30');
+
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`;
+            const payload = {
+                instances: { prompt: promptText },
+                parameters: { sampleCount: 1 }
+            };
+
+            const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+
+            async function callWithRetry(retries = 5) {
+                for (let i = 0; i < retries; i++) {
+                    try {
+                        if (i > 0) {
+                            loadingText.innerText = `Retrying connection (${i}/5)...`;
+                            await sleep(Math.pow(2, i) * 1000); // 指數退避
+                        } else {
+                            loadingText.innerText = "Connecting to AI Workshop...";
+                        }
+
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!response.ok) throw new Error('Network busy');
+
+                        const result = await response.json();
+                        if (result.predictions && result.predictions[0]) {
+                            return result.predictions[0].bytesBase64Encoded;
+                        } else {
+                            throw new Error('No data');
+                        }
+                    } catch (err) {
+                        console.warn(`Attempt ${i+1} failed`);
+                        if (i === retries - 1) throw err;
+                    }
+                }
+            }
+
+            try {
+                const base64 = await callWithRetry();
+                showImage(`data:image/png;base64,${base64}`);
+            } catch (err) {
+                handleError();
+            }
+        }
+
+        function showImage(src) {
+            const display = document.getElementById('image-display');
+            const img = document.getElementById('result-image');
+            const core = document.getElementById('core-visual');
+
+            img.src = src;
+            display.classList.remove('hidden');
+            core.classList.add('hidden');
+            setTimeout(() => {
+                display.classList.add('opacity-100');
+            }, 50);
+        }
+
+        function handleError() {
+            document.getElementById('loading-indicator').classList.add('hidden');
+            document.getElementById('core-visual').classList.add('hidden');
+            document.getElementById('error-visual').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

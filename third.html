@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AHK & Lua 協作紀念碑 - Banana 驅動版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @keyframes float { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-15px) rotate(2deg); } }
+        @keyframes pulse-glow { 0%, 100% { opacity: 1; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.5)); } 50% { opacity: 0.8; filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.2)); } }
+        .animate-float { animation: float 5s ease-in-out infinite; }
+        .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+        .tech-bg {
+            background-color: #020617;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(30, 58, 138, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(67, 56, 202, 0.2) 0%, transparent 40%),
+                linear-gradient(rgba(15, 23, 42, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(15, 23, 42, 0.1) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+        }
+        .glass-card {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="tech-bg text-slate-100 min-h-screen flex items-center justify-center p-4 md:p-8 font-sans">
+
+    <div id="app" class="max-w-5xl w-full glass-card rounded-3xl shadow-[0_35px_60px_-15px_rgba(0,0,0,0.6)] overflow-hidden relative border border-blue-500/20">
+        
+        <div class="flex flex-col lg:flex-row">
+            <!-- 視覺展示區 -->
+            <div class="lg:w-3/5 p-8 md:p-12 flex flex-col items-center justify-center relative min-h-[500px] border-r border-white/5">
+                
+                <!-- 成功顯示圖片 -->
+                <div id="image-display" class="absolute inset-0 z-20 hidden opacity-0 transition-opacity duration-1000">
+                    <img id="result-image" class="w-full h-full object-cover" src="" alt="我們的數位協作意象">
+                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
+                    <div class="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+                        <div class="text-xs font-mono text-yellow-400 bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm border border-yellow-500/20">
+                            AI GENERATED • BANANA MODEL
+                        </div>
+                        <button onclick="location.reload()" class="p-2 bg-slate-800/80 hover:bg-blue-600 rounded-lg text-white transition-all shadow-lg border border-white/10">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 互動控制核心 -->
+                <div id="core-visual" class="relative z-10 flex flex-col items-center">
+                    <div class="relative w-72 h-72 flex items-center justify-center mb-10">
+                        <!-- 裝飾環 -->
+                        <div class="absolute inset-0 border border-yellow-500/10 rounded-full scale-110"></div>
+                        <div class="absolute inset-0 border border-yellow-500/20 rounded-full scale-125 animate-pulse"></div>
+                        
+                        <!-- 核心圖示 -->
+                        <div class="relative z-10 p-10 bg-yellow-600/10 rounded-full border border-yellow-400/20 animate-float">
+                            <i data-lucide="zap" class="w-24 h-24 text-yellow-400 animate-pulse-glow"></i>
+                        </div>
+                    </div>
+
+                    <div id="status-panel" class="text-center mb-8">
+                        <h3 class="text-2xl font-black text-white mb-2 tracking-tight uppercase">Banana 引擎就緒</h3>
+                        <p class="text-slate-400 text-sm max-w-xs mx-auto">點擊下方按鈕，改用預覽版 Banana 模型嘗試為我們的專案生成視覺意象。</p>
+                    </div>
+
+                    <button id="gen-btn" onclick="startGeneration()" class="group relative px-10 py-4 bg-yellow-600 hover:bg-yellow-500 text-slate-950 rounded-2xl font-bold transition-all active:scale-95 flex items-center gap-3 overflow-hidden shadow-[0_0_30px_rgba(234,179,8,0.3)]">
+                        <span class="relative z-10 flex items-center gap-2">
+                            <i data-lucide="image" class="w-5 h-5"></i>
+                            啟動 Banana 繪圖
+                        </span>
+                    </button>
+                    
+                    <!-- 載入狀態 -->
+                    <div id="loading-indicator" class="hidden flex flex-col items-center gap-4">
+                        <div class="flex gap-1">
+                            <div class="w-2 h-8 bg-yellow-500 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                            <div class="w-2 h-12 bg-yellow-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                            <div class="w-2 h-10 bg-orange-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+                        </div>
+                        <p id="loading-text" class="text-yellow-400 text-xs font-mono tracking-widest uppercase">Processing with Banana...</p>
+                    </div>
+                </div>
+
+                <!-- 回退視覺 (如果失敗) -->
+                <div id="error-visual" class="hidden relative z-10 flex flex-col items-center text-center p-8">
+                    <div class="p-6 bg-red-500/10 rounded-full mb-6 border border-red-500/20">
+                        <i data-lucide="alert-triangle" class="w-16 h-16 text-red-400"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-2">生成請求未響應</h4>
+                    <p class="text-slate-500 text-xs mb-6 max-w-xs">即使是 Banana 模型，在目前環境下可能也受到密鑰權限的限制。請確認您是在 Canvas 預覽環境中操作。</p>
+                    <button onclick="location.reload()" class="text-xs text-blue-400 hover:text-blue-300 font-bold underline">重新整理</button>
+                </div>
+            </div>
+
+            <!-- 內容說明區 -->
+            <div class="lg:w-2/5 p-8 md:p-12 bg-slate-900/40 backdrop-blur-md flex flex-col justify-center">
+                <div class="flex items-center gap-2 mb-8">
+                    <span class="px-2 py-0.5 bg-yellow-500/20 text-yellow-400 text-[10px] font-bold rounded border border-yellow-500/30">EXPERIMENTAL</span>
+                    <span class="text-xs text-slate-500 font-mono">v2.5-FLASH-IMAGE</span>
+                </div>
+
+                <h2 class="text-3xl font-extrabold text-white mb-6 leading-tight">
+                    切換至<br><span class="text-yellow-400">Banana 預覽引擎</span>
+                </h2>
+
+                <div class="space-y-6 mb-10 text-sm">
+                    <p class="text-slate-400 leading-relaxed">
+                        我們現在嘗試使用 <strong>gemini-2.5-flash-image-preview</strong>。這個模型專門用於圖像理解與生成，具有不同的呼叫路徑。
+                    </p>
+                    <div class="p-4 bg-yellow-500/5 border border-yellow-500/10 rounded-xl">
+                        <ul class="space-y-2 text-xs text-slate-400">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-yellow-500"></i> 修改 API 終端為 generateContent</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-yellow-500"></i> 啟用 IMAGE 回應模式</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-3 h-3 text-yellow-500"></i> 調整 Base64 提取邏輯</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="p-6 bg-blue-500/5 rounded-2xl border border-blue-500/10">
+                    <p class="text-xs text-blue-300/80 leading-relaxed italic">
+                        「在開發的道路上，嘗試不同的路徑（模型）是解決問題的核心精神。」
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const apiKey = ""; 
+        const promptText = "A professional cinematic visualization of a digital project. A glowing holographic interface with Rainmeter elements. Intricate blue energy connects an AutoHotkey logo with a Lua code matrix. High-tech laboratory background, sharp focus, 8k resolution, artistic lighting.";
+
+        async function startGeneration() {
+            const genBtn = document.getElementById('gen-btn');
+            const loadingInd = document.getElementById('loading-indicator');
+            const statusPanel = document.getElementById('status-panel');
+            const loadingText = document.getElementById('loading-text');
+
+            genBtn.classList.add('hidden');
+            loadingInd.classList.remove('hidden');
+            statusPanel.classList.add('opacity-30');
+
+            // 切換至 Banana 模型的 API URL
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${apiKey}`;
+            
+            // Banana 模型的 Payload 格式
+            const payload = {
+                contents: [{
+                    parts: [{ text: promptText }]
+                }],
+                generationConfig: {
+                    responseModalities: ["IMAGE"]
+                }
+            };
+
+            const sleep = (ms) => new Promise(res => setTimeout(res, ms));
+
+            async function callWithRetry(retries = 5) {
+                for (let i = 0; i < retries; i++) {
+                    try {
+                        if (i > 0) {
+                            loadingText.innerText = `Retrying (Banana ${i}/5)...`;
+                            await sleep(Math.pow(2, i) * 1000);
+                        } else {
+                            loadingText.innerText = "Waking up Banana Engine...";
+                        }
+
+                        const response = await fetch(url, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (!response.ok) throw new Error('API Error');
+
+                        const result = await response.json();
+                        // 解析 Banana 模型回傳的 Base64 數據
+                        const base64 = result.candidates?.[0]?.content?.parts?.find(p => p.inlineData)?.inlineData?.data;
+                        
+                        if (base64) {
+                            return base64;
+                        } else {
+                            throw new Error('No image in response');
+                        }
+                    } catch (err) {
+                        console.warn(`Banana attempt ${i+1} failed`, err);
+                        if (i === retries - 1) throw err;
+                    }
+                }
+            }
+
+            try {
+                const base64Data = await callWithRetry();
+                showImage(`data:image/png;base64,${base64Data}`);
+            } catch (err) {
+                handleError();
+            }
+        }
+
+        function showImage(src) {
+            const display = document.getElementById('image-display');
+            const img = document.getElementById('result-image');
+            const core = document.getElementById('core-visual');
+
+            img.src = src;
+            display.classList.remove('hidden');
+            core.classList.add('hidden');
+            setTimeout(() => {
+                display.classList.add('opacity-100');
+            }, 50);
+        }
+
+        function handleError() {
+            document.getElementById('loading-indicator').classList.add('hidden');
+            document.getElementById('core-visual').classList.add('hidden');
+            document.getElementById('error-visual').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
