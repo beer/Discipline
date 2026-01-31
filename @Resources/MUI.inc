@@ -46,5 +46,5 @@ mui-two=[\xf783]
 mui-three=[\xf782]
 mui-four=[\xf781]
 mui-five=[\xf780]
-
-mui-undo2=[\xf783]
+mui-tag=[\xf05b]
+mui-all=[\xf03a]
