@@ -301,47 +301,72 @@ function lib.get_content(filePath, default_content_if_create)
 end
 
 -- 在 lib.lua 的匯入區塊添加
-function lib.import(fromPath, targetCollection)
+function lib.import(fromPath, targetCollection, mode)
     -- 1. 檢查來源檔案
     if not lib.file_exists(fromPath) then
-        log:print("error", "Import source not found: " .. fromPath)
-        return false
+        log:print("error", "File not found: " .. fromPath)
+        return false, "File not found: " .. fromPath
     end
 
     -- 2. 使用你的 utf16BomHandler 讀取內容 (這會自動轉為 UTF-8)
     local content, enc = utf16BomHandler.read(fromPath)
     if not content then
-        log:print("error", "Failed to read import file.")
-        return false
+        log:print("error", "Failed to read file (Encoding error")
+        return false, "Failed to read file (Encoding error)."
     end
     
     log:print("info", "Importing " .. enc .. " file from: " .. fromPath)
+
+    -- 1. 決定是否要先清空目標集合 (針對 replace 指令)
+    if mode == "replace" then
+        targetCollection._raw_data = {}
+        log:print("info", "Replace mode: target collection cleared.")
+    end
 
     -- 3. 關閉 autoSave 以提升大量匯入效能
     local originalAutoSave = targetCollection.autoSave
     targetCollection.autoSave = false
 
-    -- 4. 逐行解析
+    local ext = fromPath:match("^.+(%..+)$"):lower()
     local count = 0
-    -- 使用 gmatch 分離每一行 (相容 LF 和 CRLF)
-    for line in content:gmatch("[^\n]+") do
-        local taskData = lib._parse_line(line)
+    local lineIdx = 0
+
+    -- 3. 逐行掃描
+    for line in content:gmatch("[^\r\n]+") do
+        lineIdx = lineIdx + 1
+        local taskData = nil
+
+        if ext == ".csv" then
+            taskData = lib._parse_csv_line(line)
+        elseif ext == ".txt" then
+            -- TXT 邏輯：跳過第一行標題，解析 title|check|remind|important
+            if lineIdx > 1 then
+                taskData = lib._parse_txt_line(line)
+            end
+        else
+            -- 其他格式或純文字
+            taskData = { title = line }
+        end
+
         if taskData then
             targetCollection:create(taskData)
             count = count + 1
         end
     end
 
-    -- 5. 恢復 autoSave 並手動執行一次大存檔
+    -- 4. 恢復存檔機制並執行存檔
     targetCollection.autoSave = originalAutoSave
     targetCollection:save()
 
-    log:print("info", "Successfully imported " .. count .. " tasks.")
-    return true
+    if count == 0 then
+        return false, "No valid data found in " .. ext
+    else
+        return true, "Successfully imported " .. count .. " items."
+    end
 end
 
 -- 核心解析邏輯 (支援 title|check|remind|important)
-function lib._parse_line(line)
+function lib._parse_txt_line(line)
     -- 去除頭尾空白
     line = line:match("^%s*(.-)%s*$")
     if line == "" then return nil end
@@ -363,6 +388,20 @@ function lib._parse_line(line)
     else
         return { title = line } -- 格式 B: 純文字
     end
+end
+
+-- 解析 CSV: 針對 "quote","author" 格式
+function lib._parse_csv_line(line)
+    -- 先移除可能存在的 \r (回車符)
+    line = line:gsub("\r", "")
+    -- Regex 解釋：匹配引號內的內容，處理引號間的逗號
+    local q, a = line:match('^%s*"?(.-)"?%s*,%s*"?(.-)"?%s*$')
+    if q then
+        -- 映射：quote -> title, author -> author
+        -- 如果 author 為空字串，在 JSON 裡就會是 ""
+        return { title = q, author = a, check = false, remind = false, important = false }
+    end
+    return nil
 end
 
 -- 輔助函數：解析字串中的布林值 (處理 "true" 轉為 true)
