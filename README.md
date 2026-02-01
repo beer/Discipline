@@ -54,6 +54,25 @@ Highly flexible criteria tracking optimized for monitoring setups and execution 
 
 ---
 
+## 📜 Module 3: Multi-Source Notifier (Quotes & Notes) / 模組 3：多來源通知器
+A dynamic content engine for displaying trading wisdom, psychological reminders, or multi-asset journals with a sleek, automated interface.
+多功能動態內容引擎，用於顯示交易格言、心理提醒或多資產交易筆記，具備流暢的自動化界面。
+
+- **Command-Driven Integration / 指令驅動整合**: 
+  - **Instant Import**: Use `/import:` or `/replace:` commands to sync external `.csv` or `.txt` data. / 透過 `/import:` 或 `/replace:` 指令快速匯入外部數據。
+  - **Auto-Converter**: Automatically transforms raw text/CSV into optimized JSON structures. / 自動將原始文字或 CSV 轉換為優化的 JSON 結構。
+- **Smart Filter & Labels / 智慧過濾與標籤**: 
+  - **Multi-Label View**: Filter messages by specific categories (e.g., Important, Completed) using a rule-based label system. / 透過標籤系統，即時過濾「重要」或「已完成」等特定類別。
+  - **Validation Logic**: Intelligent fallback to "All" mode if a filter result is empty, ensuring zero UI deadlocks. / 若過濾無結果，系統會自動切回全選模式並跳出通知，防止介面卡死。
+- **Multi-Source Logic / 多來源切換**: 
+  - **Independent Progress**: Support for up to 5 independent data sources, each remembering its own last-read position. / 支援最多 5 個獨立資料來源，且各自記錄上次閱讀的索引進度。
+  - **Quote Mode**: Dedicated support for author metadata with a dimmed, synchronized fade-in/out effect. / 專為格言模式設計的作者欄位，具備低亮度、同步淡入淡出的視覺效果。
+- **Automated Pacing / 自動化節奏**: 
+  - **Cycle Timer**: Adjustable auto-rotation intervals (5s / 10s / 30s) with instant-apply logic. / 可自定義自動輪播間隔，且更換設定後立即重置計時器，無需等待。
+  - **Notification Layer**: Built-in UI alerts for system states like "File Not Found" or "Trash is Empty." / 內建系統通知層，即時顯示文件遺失或垃圾桶狀態等反饋。
+
+---
+
 ## 🛠️ Configuration Guide / 設定指南
 
 ### 1. Market Clock Settings (`MarketClock.ini`)

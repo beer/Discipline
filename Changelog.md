@@ -1,5 +1,39 @@
 # Changelog
 
+## [1.4.0] - 2026-02-01
+
+### Added
+- **Prefix-Based Command Engine**: 
+  - Introduced a specialized command interface using the `/` prefix (e.g., `/import:`, `/source:`, `/replace:`), ensuring zero conflict with standard text entries.
+  - Implemented **Regex-Based Command Parsing**: The engine now distinguishes between "Command," "Source Name," and "File Path" with support for spaces and special characters.
+- **Dynamic File Integration Pipeline**:
+  - **CSV/TXT Auto-Converter**: Developed a conversion logic that automatically transforms raw CSV or TXT files into optimized JSON structures within the `data\` folder.
+  - **Smart Source Management**: Added support for up to five independent data sources, each maintaining its own persistent progress index (`Index_One` through `Index_Five`).
+- **Interactive Notification System (`ShowMessage`)**:
+  - Developed a universal UI notification layer to display success/error states (e.g., "File not found", "Task Restored") directly on the skin.
+  - Implemented **State-Aware Cleanup**: Notifications utilize `ActionTimer` to hold the message for a set duration before automatically reverting to the task display.
+- **Enhanced Task & Author Logic**:
+  - **Author Metadata Support**: Added a secondary display layer for the `author` field, specifically optimized for quote collections.
+  - **Proportional Alpha Mapping**: Implemented a dynamic opacity formula for the author text: `(MsgAlpha * 150 / 255)`, ensuring the author remains subtle and never exceeds an alpha of 150 while syncing with the main fade animation.
+- **State-Aware UI Toggles**: Added right-click context menu toggles for **Author Display**, **Source Icons**, and **Edit Tools**, with state persistence via `WriteKeyValue`.
+
+### Changed
+- **Management UX Flow**:
+  - **Immediate Focus on Create**: Modified the task creation logic to perform a silent list rebuild and instantly shift UI focus to the newly added entry.
+  - **Rebuild-on-Action Protocol**: Refactored `Delete` and `Undo` functions to trigger `RebuildDisplayList_Silent()`, ensuring the "X / Y" counter and navigation indices stay synchronized after data changes.
+- **Filter Commit Logic**: Decoupled visual state from configuration saving; label filters now only commit to the `.ini` file if the resulting filter contains valid data.
+- **Timer Reset Protocol**: Updated `CycleTimer` to perform a `Disable/Enable` sequence on the `MeasureAutoTimer`, forcing the clock to reset and adopt new `INTERVAL` settings instantly.
+
+### Fixed
+- **Double-Escape Path Bug**: Resolved a critical issue where Windows backslashes (`\`) were "eaten" by the Rainmeter command-line parser; implemented a double-backslash substitution in AHK before passing strings to Lua.
+- **Silent Script Termination**: Fixed a bug where passing `nil` to `SKIN:Bang` would crash the Lua thread; implemented existence checks for all path variables before execution.
+- **Empty Filter Deadlock**: Resolved an issue where selecting a label with no data would result in a blank UI; added a fallback mechanism that reverts to "All" mode and alerts the user.
+- **Visual Stale-State**: Fixed a bug where the `TagIcon` color wouldn't update after a state change until the mouse left the background; added a manual color refresh call to the `CycleTaskStatus` function.
+
+### Technical Notes
+- **Animation Sync**: Fade animations for both `MeterMessage` and `MeterAuther` are now driven by a single `#MsgAlpha#` variable to ensure frame-perfect transitions.
+- **Path Resolution**: The engine now supports both absolute paths (detected via `:`) and relative paths (appended to `CURRENTPATH`).
+
 ## [1.3.0] - 2026-01-19
 
 ### Added
