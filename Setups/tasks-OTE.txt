@@ -1,0 +1,10 @@
+task|x|x
+Liquidity Sweep|||x
+Align HTF|||x
+HTF FVG|||x
+PO3/OTE|||x
+LTF iFVG, CISD|||x
+LRL Target|||
+SMT|||
+TP equal low|||
+Half Wick rejection|||

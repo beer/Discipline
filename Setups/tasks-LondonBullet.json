@@ -1,0 +1,56 @@
+[
+    {
+        "title": "Asia H/L Sweep",
+        "check": false,
+        "remind": false,
+        "important": true
+    },
+    {
+        "title": "HTF Bias",
+        "check": false,
+        "remind": false,
+        "important": true
+    },
+    {
+        "title": "One hour opening zone",
+        "check": false,
+        "remind": false,
+        "important": false
+    },
+    {
+        "title": "LTF iFVG, CISD",
+        "check": false,
+        "remind": false,
+        "important": false
+    },
+    {
+        "title": "One 5M candle raid",
+        "check": false,
+        "remind": false,
+        "important": false
+    },
+    {
+        "title": "Mon,Tue,Wed for CT",
+        "check": false,
+        "remind": false,
+        "important": false
+    },
+    {
+        "title": "Back Asia and ranging",
+        "check": false,
+        "remind": false,
+        "important": false
+    },
+    {
+        "title": "PW POC respect",
+        "check": false,
+        "remind": false,
+        "important": false
+    },
+    {
+        "title": "Big Level rejection",
+        "check": false,
+        "remind": false,
+        "important": false
+    }
+]

@@ -1,0 +1,20 @@
+{
+    "importantIconChecked": "mui-violate",
+    "combinedColor": "251,192,132,255",
+    "importantCheckedColor": "255,130,130,255",
+    "remindCheckedColor": "255,130,130,255",
+    "rewardIconColor": "255,255,255,255",
+    "remindIcon": "mui-gavel",
+    "defaultIconCheck": "mui-check",
+    "remindIconCheckedColor": "255,130,130,255",
+    "remindColor": "30,215,200,255",
+    "importantIcon": "mui-violate",
+    "combinedIconCheckedColor": "251,192,132,255",
+    "defaultIconChecked": "mui-checked",
+    "importantIconCheckedColor": "255,130,130,255",
+    "importantColor": "30,215,200,255",
+    "model": "restrict",
+    "remindIconChecked": "mui-violate",
+    "rewardIcon": "mui-gavel",
+    "combinedIconChecked": "mui-gavel"
+}
