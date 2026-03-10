@@ -1,5 +1,30 @@
 # Changelog
 
+## [1.5.0] - 2026-03-10
+
+### Added
+- **Modular Skin Architecture**: Split the suite into independent skins for flexible loading:
+  - `Clock/` — Standalone world clock with configurable timezone offset
+  - `TradingClock/` — Full-featured NY-based trading clock with sessions, news, and macro bars
+  - `ICT/` — ICT-specific strategy modules (CVDS, OTE, PO3, R, London Bullet)
+  - `Monitor/` — Market trend monitoring widget
+  - `Notes/` — Multi-source notifier with Douglas quotes and trading notes
+  - `Restrict/` — Daily trading restriction tracker
+  - `Setups/` — Setup-specific task trackers (OTE, PO3)
+- **Shared Core Library**: Extracted `TradingCore.lua`, `TradingTimeNY.lua`, `TradingTimeCore.lua`, `Notifier.lua`, and `lib.lua` into `@Resources/` for cross-skin reuse.
+- **Additional Fonts**: Added `MaterialSymbolsOutlined`, `NotoSansHK-Bold`, `ChironGoRoundTC-Bold` for improved CJK and icon rendering.
+
+### Fixed
+- **DST Timezone Calculation Bug (TradingTimeCore.lua)**:
+  - Fixed `os.time(os.date("!*t"))` returning inaccurate UTC on Windows, causing 1-hour offset in manual timezone mode.
+  - Replaced with direct `hour/min` field comparison (`lt.hour - ut.hour`) for reliable local UTC offset detection.
+  - Fixed "First Sunday" formula bug (`7 - (wday-1)` was off by one week when the 1st falls on Sunday); replaced with correct `nthSunday()` helper function.
+  - Australian and North American DST transition dates are now calculated correctly for all years.
+
+### Changed
+- **Folder Restructure**: Renamed `Setups-ICT/` → `ICT/`, `Clock/TradingClock.ini` → `TradingClock/TradingClock.ini`, `Rules/Daily.ini` → `Restrict/Daily.ini`.
+- **Dynamic Include Separation**: Each skin now has its own `DynamicMeters-*.inc` generated independently.
+
 ## [1.4.0] - 2026-02-01
 
 ### Added
