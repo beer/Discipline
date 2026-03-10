@@ -1,0 +1,56 @@
+[
+    {
+        "title": "Accumulation",
+        "check": false,
+        "remind": false,
+        "important": true
+    },
+    {
+        "title": "Manipulation",
+        "check": false,
+        "remind": false,
+        "important": true
+    },
+    {
+        "title": "Liquidity Sweep",
+        "check": false,
+        "remind": false,
+        "important": true
+    },
+    {
+        "title": "Align HTF",
+        "check": false,
+        "remind": false,
+        "important": true
+    },
+    {
+        "title": "HTF FVG",
+        "check": false,
+        "remind": false,
+        "important": true
+    },
+    {
+        "title": "LTF iFVG, CISD",
+        "check": false,
+        "remind": false,
+        "important": true
+    },
+    {
+        "title": "LRL Target",
+        "check": false,
+        "remind": false,
+        "important": false
+    },
+    {
+        "title": "Distrubution",
+        "check": false,
+        "remind": false,
+        "important": false
+    },
+    {
+        "title": "SMT",
+        "check": false,
+        "remind": false,
+        "important": false
+    }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "start": 2000,
+    "stop": 2400,
+    "name": "ASIA SESSION",
+    "color": "255,215,0,30",
+    "fColor": "255,255,255,150",
+    "blinking": 10
+  },
+  {
+    "start": 200,
+    "stop": 500,
+    "name": "LONDON SESSION",
+    "color": "0,255,255,20",
+    "fColor": "255,255,255,150",
+    "blinking": 10
+  },
+  {
+    "start": 930,
+    "stop": 1200,
+    "name": "NY AM SESSION",
+    "color": "138,43,226,15",
+    "fColor": "255,255,255,150",
+    "blinking": 5
+  },
+  {
+    "start": 1330,
+    "stop": 1600,
+    "name": "NY PM SESSION",
+    "color": "138,43,226,15",
+    "fColor": "255,255,255,150",
+    "blinking": 5
+  },
+  {
+    "start": 300,
+    "stop": 400,
+    "name": "LONDON SILVER BULLET",
+    "color": "255,140,0,40",
+    "fColor": "255,255,255,150",
+    "blinking": 15
+  },
+  {
+    "start": 1000,
+    "stop": 1100,
+    "name": "NY AM SILVER BULLET",
+    "color": "255,140,0,40",
+    "fColor": "255,255,255,150",
+    "blinking": 15
+  },
+  {
+    "start": 1400,
+    "stop": 1500,
+    "name": "NY PM SILVER BULLET",
+    "color": "255,140,0,40",
+    "fColor": "255,255,255,150",
+    "blinking": 15
+  }
+]
