@@ -143,40 +143,53 @@ function Update()
     return os.date("%H:%M:%S", now_ts)
 end
 
+-- 計算某月第 N 個星期日 (wday: 1=Sun)
+-- n=1 → 第一個星期日, n=2 → 第二個星期日
+local function nthSunday(year, month, n)
+    local wday = os.date("*t", os.time({year=year, month=month, day=1})).wday
+    local first = (8 - wday) % 7 + 1  -- 該月第一個星期日是幾號
+    return first + (n - 1) * 7
+end
+
 function GetTimeWithDST(manualOffset)
-    local utc = os.time(os.date("!*t"))
-    
-    -- 如果沒有手動設定時區，直接回傳本機時間，並動態計算目前的本機偏移值
-    if not manualOffset or manualOffset == "" then 
-        local local_ts = os.time()
-        local diff = os.difftime(local_ts, utc)
-        local currentOffset = math.floor(diff / 3600 + 0.5)
+    local local_ts = os.time()
+    -- 直接比較 hour/min 欄位算偏移，避免 os.time(os.date("!*t")) 精度問題
+    local lt = os.date("*t", local_ts)
+    local ut = os.date("!*t", local_ts)
+    local local_offset = (lt.hour - ut.hour) + (lt.min - ut.min) / 60
+    if lt.yday ~= ut.yday then
+        local_offset = local_offset + (lt.yday > ut.yday and 24 or -24)
+    end
+
+    -- 如果沒有手動設定時區，直接回傳本機時間
+    if not manualOffset or manualOffset == "" then
+        local currentOffset = math.floor(local_offset + 0.5)
         SKIN:Bang('!SetVariable', 'NYOffset', (currentOffset >= 0 and "+" or "") .. currentOffset)
-        return local_ts 
+        return local_ts
     end
 
     local offsetNum = tonumber(manualOffset)
-    local nowT = os.date("!*t", utc)
-    local year = nowT.year
+    local year = os.date("*t", local_ts).year
 
-    -- 1. 亞洲排除區 (固定時區)
+    -- 1. 亞洲排除區 (固定時區，無 DST)
     if offsetNum == 8 or offsetNum == 9 then
         -- 直接回傳，不改 offsetNum
-    -- 2. 北美規則
+    -- 2. 北美規則: 3月第2個星期日 02:00 EST → 11月第1個星期日 02:00 EDT
     elseif offsetNum <= -4 and offsetNum >= -10 then
-        local dst_start = os.time({year=year, month=3, day=14 - (os.date("*t", os.time({year=year, month=3, day=1})).wday - 1), hour=7})
-        local dst_end = os.time({year=year, month=11, day=7 - (os.date("*t", os.time({year=year, month=11, day=1})).wday - 1), hour=6})
-        if utc >= dst_start and utc < dst_end then offsetNum = offsetNum + 1 end
-    -- 3. 澳洲規則
+        local dst_start = os.time({year=year, month=3, day=nthSunday(year, 3, 2), hour=7})
+        local dst_end = os.time({year=year, month=11, day=nthSunday(year, 11, 1), hour=6})
+        if local_ts >= dst_start and local_ts < dst_end then offsetNum = offsetNum + 1 end
+    -- 3. 澳洲規則: 10月第1個星期日 02:00 AEST → 4月第1個星期日 03:00 AEDT
     elseif offsetNum >= 9.5 and offsetNum <= 11 then
-        local this_year_start = os.time({year=year, month=10, day=7 - (os.date("*t", os.time({year=year, month=10, day=1})).wday - 1), hour=16})
-        local this_year_end = os.time({year=year, month=4, day=7 - (os.date("*t", os.time({year=year, month=4, day=1})).wday - 1), hour=15})
-        local last_year_start = os.time({year=year-1, month=10, day=7 - (os.date("*t", os.time({year=year-1, month=10, day=1})).wday - 1), hour=16})
-        if (utc >= last_year_start and utc < this_year_end) or (utc >= this_year_start) then offsetNum = offsetNum + 1 end
+        local this_start = os.time({year=year, month=10, day=nthSunday(year, 10, 1), hour=16})
+        local this_end = os.time({year=year, month=4, day=nthSunday(year, 4, 1), hour=15})
+        local last_start = os.time({year=year-1, month=10, day=nthSunday(year-1, 10, 1), hour=16})
+        if (local_ts >= last_start and local_ts < this_end) or (local_ts >= this_start) then offsetNum = offsetNum + 1 end
     end
 
     SKIN:Bang('!SetVariable', 'NYOffset', (offsetNum >= 0 and "+" or "") .. offsetNum)
-    return utc + (offsetNum * 3600)
+    -- 用本機時間差推算，避免 os.time(os.date("!*t")) 精度問題
+    return local_ts + (offsetNum - local_offset) * 3600
 end
 
 function ForceOpaque(colorStr, alpha)

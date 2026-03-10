@@ -30,23 +30,44 @@ A professional Rainmeter widget suite designed for serious traders. This toolset
 ---
 
 ## 🕒 Module 1: Professional Trading Clock / 模組 1：專業交易時鐘
+
+The suite includes two independent clock skins:
+
+本套件包含兩個獨立的時鐘模組：
+
+### `TradingClock/` — NY Market Clock / 紐約交易時鐘
 A timing engine specifically calibrated for New York markets with institutional session logic and economic data.
 專為紐約市場校準的高精度時間引擎，整合了機構級的時段邏輯與經濟數據。
 
-- **Auto DST / 自動夏令時**: Intelligent detection of UTC-4 / UTC-5. / 智能偵測 DST，無需手動調整。
+- **Auto DST / 自動夏令時**: Intelligent detection of UTC-4 / UTC-5. / 智能偵測北美 DST，無需手動調整。
 - **2026 Calendar / 2026 市場日曆**: Built-in US holidays and early close (13:00) alerts. / 內建 2026 全年美股節日與提早收盤提醒。
 - **Session Logic / 交易時段邏輯**: Real-time detection of **Asia, London, NY AM/PM, and Silver Bullet** sessions with contextual UI colors. / 即時識別各大時段，UI 顏色隨當前活躍時段自動切換。
 - **Economic Calendar / 智能財經日曆**: Auto-fetches "High Impact USD" news from Forex Factory with countdowns and 10s flash warnings. / 自動抓取高影響力 USD 新聞，具備新聞倒數與 10 秒閃爍預警。
+- **Macro Bar / Macro 進度條**: Visual countdown bars for ICT macro time windows. / ICT Macro 時段視覺化進度條。
 - **Simulation Mode / 穿越模擬模式**: "Time Travel" feature for backtesting behavior on any specific date. / 開發者可設定特定日期測試時段變換與 UI 行為。
+
+### `Clock/` — World Clock / 世界時鐘
+A lightweight standalone clock with configurable timezone and auto-DST for any region.
+輕量獨立時鐘，可自由設定時區，支援北美與澳洲自動夏令時間偵測。
+
+- **Configurable Timezone / 可設定時區**: Set `TimeZoneOffset` to any UTC offset (e.g., `9.5` for Adelaide, `-5` for New York, `8` for Taiwan). / 填入任意 UTC 偏移值即可。
+- **Multi-Region Auto DST / 多地區自動夏令時**: Automatically adjusts for North America (Mar-Nov) and Australia (Oct-Apr). / 自動偵測北美與澳洲夏令時間。
+- **Session Overlay / 時段疊加**: Optional `Sessions.json` for session-aware background colors and countdowns. / 可選配 Sessions.json 以顯示時段顏色與倒數。
 
 ---
 
 ## 📝 Module 2: Trading Task Tracker / 模組 2：交易規則追蹤器
-Highly flexible criteria tracking optimized for monitoring setups and execution rules.
-高度靈活的進場條件追蹤工具，透過權重計算，將你的交易紀律視覺化。
+Highly flexible criteria tracking optimized for monitoring setups and execution rules. Now organized into specialized folders:
+高度靈活的進場條件追蹤工具，透過權重計算，將你的交易紀律視覺化。現已按用途分類：
 
-- **Flexible Structure / 完全自定義結構**: 
-  - **Renameable Folders**: Rename `Setups-ICT` to anything (e.g., `SMC-Strategy`). / 可隨意更改資料夾名稱。
+- `Setups/` — Entry setup trackers (OTE, PO3, London Bullet) / 進場條件追蹤器
+- `Rules/` — Exit rule checklist / 出場規則清單
+- `Restrict/` — Daily trading restriction tracker / 每日交易限制追蹤器
+- `ICT/` — ICT-specific strategy modules (CVDS, OTE, PO3, R) / ICT 策略模組
+- `Monitor/` — Market trend monitoring / 市場趨勢監控
+
+- **Flexible Structure / 完全自定義結構**:
+  - **Renameable Folders**: Rename any folder to match your strategy (e.g., `SMC-Strategy`). / 可隨意更改資料夾名稱。
   - **Duplicate .ini**: Rename or duplicate `.ini` files to run multiple independent trackers. / 檔案可隨意改名或複制，同時開啟多個獨立策略追蹤器。
 - **Weighted Progress / 權重進度條**: Visualize Major vs. Minor rules; Important tasks can hold 80% weight. / 區分主要與一般條件，主要條件可佔進度條 80%。
 - **Screenshot Mode / 截圖模式**: Instantly hide edit icons for a clean look in your journal. / 一鍵隱藏編輯按鈕，呈現乾淨介面供截圖存檔。
@@ -73,15 +94,39 @@ A dynamic content engine for displaying trading wisdom, psychological reminders,
 
 ---
 
+## 📂 Project Structure / 專案結構
+
+```
+rainmeter-trading-tracker/
+├── @Resources/          # Shared scripts, fonts, and includes
+│   ├── TradingTimeNY.lua    # NY market time engine (TradingClock)
+│   ├── TradingTimeCore.lua  # World clock time engine (Clock)
+│   ├── TradingCore.lua      # Shared trading session logic
+│   ├── Notifier.lua         # Notification system
+│   ├── lib.lua              # Utility functions
+│   ├── json.lua             # JSON parser
+│   └── Fonts/               # Bundled fonts
+├── TradingClock/        # NY trading clock with sessions & news
+├── Clock/               # Standalone world clock (configurable TZ)
+├── Setups/              # Entry setup trackers (OTE, PO3)
+├── Rules/               # Exit rule checklist
+├── Restrict/            # Daily trading restrictions
+├── ICT/                 # ICT strategy modules
+├── Monitor/             # Market trend monitoring
+└── Notes/               # Trading quotes & notes
+```
+
+---
+
 ## 🛠️ Configuration Guide / 設定指南
 
-### 1. Market Clock Settings (`MarketClock.ini`)
+### 1. Market Clock Settings (`TradingClock/TradingClock.ini` or `Clock/Clock.ini`)
 | Variable / 變數 | Description / 說明 |
 | :--- | :--- |
 | `Scale` | Overall UI size (e.g., `3.4` for 4K screens). / 整體縮放比例（如 4K 螢幕建議設定 3.4 以上）。 |
 | `SHOW_NEWS` | Expand or collapse the news panel (`0`/`1`). / 開啟或關閉下方的新聞面板。 |
 
-### 2. Task Tracker Settings (`Rules.ini` / `Setup.ini`)
+### 2. Task Tracker Settings (`Rules/Exit.ini`, `Setups/*.ini`, `Restrict/Daily.ini`)
 | Category / 類別 | Variable / 變數 | Description / 說明 |
 | :--- | :--- | :--- |
 | **Layout / 佈局** | `FONT_SIZE` | Base font size; all icons and bars scale accordingly. / 基礎字體大小，Icon 與進度條會自動縮放。 |
@@ -164,14 +209,14 @@ Colors use the format `Red, Green, Blue, Alpha` (Range: 0-255).
 
 - Activate `rainmeter-trading-tracker` skin
   - You can do this by right-clicking on an already active skin to bring up the Rainmeter menu
-  - Navigate to `Rainmeter > Skins > rainmeter-trading-tracker > Setups/Rules > Large/Medium/Small.ini`
+  - Navigate to `Rainmeter > Skins > rainmeter-trading-tracker > TradingClock/Clock/Setups/Rules`
     - If you do not see `rainmeter-trading-tracker` in the skin selection, try navigating to `Rainmeter > Refresh all`
 
 ---
 
 ## 🤖 Advanced Simulation (Developer Only) / 進階模擬測試
-To test future dates, edit the top of `MarketClock.lua`:
-若要測試未來日期，請修改 `MarketClock.lua` 頂部：
+To test future dates, edit the top of `@Resources/TradingTimeNY.lua`:
+若要測試未來日期，請修改 `@Resources/TradingTimeNY.lua` 頂部：
 ```lua
 DEBUG_MODE = true
 DEBUG_NY_TIME_STR = "2026-01-14 09:30:00" -- Jump to NY Open / 模擬紐約開盤
