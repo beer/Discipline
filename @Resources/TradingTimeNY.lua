@@ -643,10 +643,16 @@ function GetCurrentTime(applyOffset)
     end
 
     -- Automatic DST Rule Calculation / 自動夏令時法則計算
+    -- 計算某月第 N 個星期日 (與 TradingTimeCore.lua 同步)
+    local function nthSunday(yr, month, n)
+        local wday = os.date("*t", os.time({year=yr, month=month, day=1})).wday
+        local first = (8 - wday) % 7 + 1
+        return first + (n - 1) * 7
+    end
     local nowT = os.date("!*t", base_utc)
     local year = nowT.year
-    local dst_start = os.time({year=year, month=3, day=14 - (os.date("*t", os.time({year=year, month=3, day=1})).wday - 1), hour=7})
-    local dst_end = os.time({year=year, month=11, day=7 - (os.date("*t", os.time({year=year, month=11, day=1})).wday - 1), hour=6})
+    local dst_start = os.time({year=year, month=3, day=nthSunday(year, 3, 2), hour=7})
+    local dst_end = os.time({year=year, month=11, day=nthSunday(year, 11, 1), hour=6})
     offset = (base_utc >= dst_start and base_utc < dst_end) and -4 or -5
     SKIN:Bang('!SetVariable', 'NYOffset', offset)
 
