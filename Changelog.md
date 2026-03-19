@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.5.1] - 2026-03-19
+
+### Fixed
+- **DST Double-Correction Bug (TradingClock)**: Added `DaylightSavingTime=0` to `MeasureNYTime` and `MeasureNYHHMM` in `TradingClock.ini`. Rainmeter's default `DaylightSavingTime=1` was re-applying the local system's DST bias on top of the Lua-calculated offset, causing the NY clock to drift by 1 hour during daylight saving time.
+- **DST Date Formula Bug (TradingTimeNY.lua)**: Replaced the incorrect `14 - (wday - 1)` formula with the proven `nthSunday()` helper (synced from `TradingTimeCore.lua`). The old formula miscalculated the 2nd Sunday of March — e.g., for 2026 it returned March 14 instead of the correct March 8, leaving the clock on EST for 6 extra days after DST had already begun.
+
 ## [1.5.0] - 2026-03-10
 
 ### Added
